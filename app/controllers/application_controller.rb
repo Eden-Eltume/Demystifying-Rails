@@ -20,4 +20,23 @@ class ApplicationController < ActionController::Base
 
         db_connection
     end
+
+    def new_post
+        render 'application/new_post'
+    end
+
+    def create_post
+        insert_query = <<-SQL
+            INSERT INTO posts (title, body, author, created_at)
+            VALUES (?, ?, ?, ?)
+        SQL
+
+        connection.execute insert_query,
+            params['title'],
+            params['body'],
+            params['author'],
+            Date.current.to_s
+
+        redirect_to '/list_posts'
+    end
 end
