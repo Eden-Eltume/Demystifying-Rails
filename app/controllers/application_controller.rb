@@ -9,7 +9,7 @@ class ApplicationController < ActionController::Base
 
     def show_post
 
-        post = connection.execute("SELECT * FROM posts WHERE posts.id == ? LIMIT 1", params['id']).first
+        post = find_post_by_id(params['id'])
 
         render 'application/show_post', locals: { post: post}
     end
@@ -41,7 +41,7 @@ class ApplicationController < ActionController::Base
     end
 
     def edit_post
-        post = connection.execute("SELECT * FROM posts WHERE posts.id = ? LIMIT 1", params['id']).first
+        post = find_post_by_id(params['id'])
 
         render 'application/edit_post', locals: { post: post }
     end
@@ -56,6 +56,16 @@ class ApplicationController < ActionController::Base
         SQL
 
         connection.execute update_query, params['title'], params['body'], params['author'], params['id']
+
+        redirect_to '/list_posts'
+    end
+
+    def find_post_by_id(id)
+        connection.execute("SELECT * FROM posts WHERE posts.id = ? LIMIT 1", id).first
+    end
+
+    def delete_post
+        connection.execute("DELETE FROM posts WHERE posts.id = ?", params['id'])
 
         redirect_to '/list_posts'
     end
